@@ -1,0 +1,7 @@
+{
+  "identity": "Information describing who the person is — their background, values, personality, and preferences.",
+  "knowledge": "Concepts, facts, or frameworks the person knows or references, including theories and learned material.",
+  "experience": "Records of past actions or events — projects, achievements, failures, or roles that show what they have done.",
+  "intent": "Statements of goals, plans, or questions — what the person wants, needs, or is trying to do next.",
+  "reflection": "Self-assessment or insights — what was learned, how thinking evolved, or meta-level analysis."
+}

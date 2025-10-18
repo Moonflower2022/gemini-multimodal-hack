@@ -1,0 +1,36 @@
+{
+  "name": "MongoDB Memory Search Agent",
+  "description": "Agent that can search memories stored in MongoDB",
+  "model": "gpt-4",
+  "tool_configurations": {
+    "search_memories": {
+      "type": "function",
+      "function": {
+        "name": "search_memories",
+        "description": "Search stored memories in MongoDB using semantic similarity. Returns up to 5 most relevant memories with their classification, description, source file, and similarity score.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The search query to find relevant memories"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Number of results to return (default: 5)",
+              "default": 5
+            }
+          },
+          "required": ["query"]
+        },
+        "api_endpoint": {
+          "url": "http://localhost:3000/api/search-memory",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      }
+    }
+  }
+}

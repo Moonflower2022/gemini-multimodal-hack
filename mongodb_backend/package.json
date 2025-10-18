@@ -1,0 +1,22 @@
+{
+  "name": "ai-classifier-backend",
+  "version": "1.0.0",
+  "description": "Backend server for the AI File Classifier app.",
+  "main": "server.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env server.mjs",
+    "mcp": "node --env-file=.env mcp-server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@google/genai": "^0.14.0",
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0",
+    "node-fetch": "^2.7.0"
+  }
+}

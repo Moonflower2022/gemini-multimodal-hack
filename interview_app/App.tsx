@@ -32,6 +32,9 @@ function App() {
   const [status, setStatus] = useState<TranscriptionStatus>(TranscriptionStatus.IDLE);
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [sidebarWidth, setSidebarWidth] = useState(384); // 384px = w-96
+  const [minThreshold, setMinThreshold] = useState(0.5); // Minimum match score (0-1)
+  const [maxResults, setMaxResults] = useState(3); // Number of results to show
 
   const liveSessionRef = useRef<{ stop: () => void } | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
@@ -39,6 +42,7 @@ function App() {
   const currentQuestionGroup = useRef<number | null>(null);
   const questionGroupCounter = useRef(0);
   const accumulatedText = useRef<string>('');
+  const isResizing = useRef(false);
 
   const scrollToBottom = () => {
     transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -87,8 +91,10 @@ function App() {
           let searchResults: MemorySearchResult[] = [];
           try {
             console.log('🔍 Searching database for:', fullText);
-            searchResults = await searchMemories(fullText);
-            console.log('✅ Found', searchResults.length, 'relevant memories');
+            const allResults = await searchMemories(fullText, maxResults);
+            // Filter by minimum threshold
+            searchResults = allResults.filter(result => result.score >= minThreshold);
+            console.log('✅ Found', searchResults.length, 'relevant memories (filtered by threshold)');
           } catch (error) {
             console.error('❌ Error searching memories:', error);
           }
@@ -162,6 +168,36 @@ function App() {
     };
   }, []);
 
+  // Handle resizing
+  const handleMouseDown = () => {
+    isResizing.current = true;
+    document.body.style.cursor = 'col-resize';
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing.current) return;
+
+    const newWidth = window.innerWidth - e.clientX - 16; // 16px for padding
+    if (newWidth >= 200) { // Only minimum constraint to keep it usable
+      setSidebarWidth(newWidth);
+    }
+  }, []);
+
+  const handleMouseUp = () => {
+    isResizing.current = false;
+    document.body.style.cursor = 'default';
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleMouseMove]);
+
   const isListening = status === TranscriptionStatus.LISTENING || status === TranscriptionStatus.CONNECTING;
 
   // Generate a consistent color for each question group
@@ -192,7 +228,35 @@ function App() {
       {/* Top Bar */}
       <header className="flex items-center justify-between mb-4 px-4 py-3 bg-gray-800 rounded-lg border border-gray-700">
         <h1 className="text-2xl font-bold text-white">OnCue</h1>
-        <div className="flex items-center space-x-4">
+
+        <div className="flex items-center space-x-6">
+          {/* Match Threshold Control */}
+          <div className="flex items-center space-x-2">
+            <label className="text-sm text-gray-400">Min Match:</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={minThreshold * 100}
+              onChange={(e) => setMinThreshold(parseFloat(e.target.value) / 100)}
+              className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+            <span className="text-sm text-gray-300 w-10">{(minThreshold * 100).toFixed(0)}%</span>
+          </div>
+
+          {/* Number of Results Control */}
+          <div className="flex items-center space-x-2">
+            <label className="text-sm text-gray-400">Results:</label>
+            <input
+              type="number"
+              min="1"
+              max="10"
+              value={maxResults}
+              onChange={(e) => setMaxResults(parseInt(e.target.value) || 1)}
+              className="w-16 px-2 py-1 bg-gray-700 text-gray-200 rounded border border-gray-600 text-sm"
+            />
+          </div>
+
           <StatusIndicator status={status} />
           <button
             onClick={handleStart}
@@ -216,7 +280,7 @@ function App() {
       {error && <div className="text-red-400 bg-red-900/50 p-3 rounded-lg text-center mb-4">{error}</div>}
 
       {/* Main Content Area */}
-      <div className="flex-grow flex gap-4 overflow-hidden">
+      <div className="flex-grow flex overflow-hidden">
         {/* Transcription Panel */}
         <main className="flex-1 bg-gray-800 rounded-xl shadow-2xl p-6 overflow-y-auto font-mono text-lg leading-relaxed border border-gray-700">
           {phrases.map((phrase) => (
@@ -234,8 +298,17 @@ function App() {
           <div ref={transcriptEndRef} />
         </main>
 
+        {/* Resize Handle */}
+        <div
+          className="w-1 bg-gray-700 hover:bg-blue-500 cursor-col-resize transition-colors flex-shrink-0"
+          onMouseDown={handleMouseDown}
+        />
+
         {/* Context Clues Side Panel */}
-        <aside className="w-96 bg-gray-800 rounded-xl shadow-2xl p-4 overflow-y-auto border border-gray-700 flex-shrink-0">
+        <aside
+          className="bg-gray-800 rounded-xl shadow-2xl p-4 overflow-y-auto border border-gray-700 flex-shrink-0"
+          style={{ width: `${sidebarWidth}px` }}
+        >
           <h2 className="text-lg font-bold text-gray-200 mb-4">Context Clues</h2>
           <div className="space-y-4">
             {questionsWithResults.length === 0 ? (

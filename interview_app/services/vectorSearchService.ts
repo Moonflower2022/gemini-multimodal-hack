@@ -12,16 +12,17 @@ export interface MemorySearchResult {
 /**
  * Searches stored memories using vector similarity via backend API
  * @param query The search query to find relevant memories
- * @returns Top 5 most relevant memories with similarity scores
+ * @param limit Maximum number of results to return
+ * @returns Most relevant memories with similarity scores
  */
-export async function searchMemories(query: string): Promise<MemorySearchResult[]> {
+export async function searchMemories(query: string, limit: number = 3): Promise<MemorySearchResult[]> {
   try {
     const response = await fetch(`${BACKEND_URL}/api/search-memory`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query, limit: 3 }),
+      body: JSON.stringify({ query, limit }),
     });
 
     if (!response.ok) {

@@ -227,7 +227,7 @@ function App() {
     }, [] as Phrase[]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col p-4 font-sans">
+    <div className="h-screen bg-gray-900 text-gray-100 flex flex-col p-4 font-sans overflow-hidden">
       {/* Top Bar */}
       <header className="flex items-center justify-between mb-4 px-4 py-3 bg-gray-800 rounded-lg border border-gray-700">
         <h1 className="text-2xl font-bold text-white">OnCue</h1>

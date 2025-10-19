@@ -24,6 +24,44 @@ cd mongodb_backend
 node mcp-server.mjs
 ```
 
+## Interview App Integration
+
+The interview app now automatically queries the MongoDB vector database when it detects a question.
+
+### Setup
+
+1. Make sure you have the environment variables set:
+   ```bash
+   export MONGO_DB_URI="your_mongodb_connection_string"
+   export GEMINI_API_KEY="your_gemini_api_key"
+   ```
+
+2. Start the backend server (runs on port 3001):
+   ```bash
+   cd mongodb_backend
+   node server.mjs
+   ```
+
+3. In a separate terminal, run the interview app (runs on port 3000):
+   ```bash
+   cd interview_app
+   npm run dev
+   ```
+
+### How It Works
+
+1. The app uses live transcription to capture audio input
+2. When it detects a question (using keyword or LLM-based detection)
+3. It automatically queries the MongoDB vector database using the question text
+4. Relevant memories are displayed below the transcription with:
+   - Classification type
+   - Description
+   - Source file
+   - Similarity score
+   - Creation date
+
+The vector search uses the same Gemini `text-embedding-004` model to create embeddings and performs similarity search against stored memories.
+
 ## Vector Search Details
 
 **Database:** `context`

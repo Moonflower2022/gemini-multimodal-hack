@@ -22,7 +22,7 @@ const mongoClient = new MongoClient(MONGO_DB_URI);
 
 const server = new Server(
   {
-    name: "memory-vector-search",
+    name: "OnCue",
     version: "1.0.0",
   },
   {
@@ -36,7 +36,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: "search_memories",
+        name: "vector_search",
         description: "Search stored memories using vector similarity. Returns the top 5 most relevant memories based on semantic similarity.",
         inputSchema: {
           type: "object",
@@ -54,7 +54,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name === "search_memories") {
+  if (request.params.name === "vector_search") {
     const query = request.params.arguments.query;
 
     try {

@@ -24,7 +24,7 @@
           "required": ["query"]
         },
         "api_endpoint": {
-          "url": "http://localhost:3000/api/search-memory",
+          "url": "http://localhost:5001/api/search-memory",
           "method": "POST",
           "headers": {
             "Content-Type": "application/json"

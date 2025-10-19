@@ -10,7 +10,7 @@ import { MongoClient } from 'mongodb';
 import { GoogleGenAI } from '@google/genai';
 
 // --- CONFIGURATION ---
-const PORT = 3000;
+const PORT = 5001;
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 

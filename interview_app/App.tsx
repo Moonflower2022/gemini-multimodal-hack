@@ -53,6 +53,9 @@ function App() {
   }, [phrases]);
 
   const onTranscriptionUpdate = useCallback((text: string, isFinal: boolean) => {
+    // Capture current values to use in async callback
+    const currentMaxResults = maxResults;
+    const currentMinThreshold = minThreshold;
     // Check if this chunk contains sentence-ending punctuation
     const hasPunctuation = /[.?!]/.test(text);
 
@@ -90,10 +93,10 @@ function App() {
           // Query the database for relevant memories
           let searchResults: MemorySearchResult[] = [];
           try {
-            console.log('🔍 Searching database for:', fullText);
-            const allResults = await searchMemories(fullText, maxResults);
+            console.log('🔍 Searching database for:', fullText, 'with limit:', currentMaxResults);
+            const allResults = await searchMemories(fullText, currentMaxResults);
             // Filter by minimum threshold
-            searchResults = allResults.filter(result => result.score >= minThreshold);
+            searchResults = allResults.filter(result => result.score >= currentMinThreshold);
             console.log('✅ Found', searchResults.length, 'relevant memories (filtered by threshold)');
           } catch (error) {
             console.error('❌ Error searching memories:', error);
@@ -120,7 +123,7 @@ function App() {
       accumulatedText.current = '';
       currentQuestionGroup.current = null;
     }
-  }, []);
+  }, [maxResults, minThreshold]);
 
   const handleStart = async () => {
     setError(null);

@@ -1,0 +1,7 @@
+{
+  "name": "Speedy Transcription + Question Detection",
+  "description": "A real-time transcription application powered by the Gemini Live API. It captures audio from your microphone and displays the live transcription on the screen as you speak.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

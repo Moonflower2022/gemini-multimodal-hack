@@ -55,14 +55,8 @@ mongoClient.connect().then(client => {
         contents: textToEmbed, 
       };
 
-      console.log('--- Sending to Gemini embedContent API: ---');
-      console.log(JSON.stringify(payload, null, 2));
-
       // 2. Call the API
       const embeddingResult = await ai.models.embedContent(payload);
-
-      console.log('--- Received from Gemini embedContent API: ---');
-      console.log(JSON.stringify(embeddingResult, null, 2));
       
       // 3. Extract the embedding
       const embedding = embeddingResult.embeddings[0].values;
